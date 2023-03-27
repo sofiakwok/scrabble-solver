@@ -1,4 +1,5 @@
 import numpy as np
+import sys
 """We start by assuming we know the letters in our hand and the letters on the board. The letters on the board are in a 100x100 (arbitrary size) grid.
 We save the letters on the grid and their position, and then iterate through the possible plays. 
 Using Scrabble 2022 dictionary
@@ -7,6 +8,45 @@ Only look for solutions with one intersection to the current board state (no dou
 No blank tiles (can change later)
 Grid position (0, 0) is at the top left
 """
+
+def prettyprint(grid):
+    for i in range(len(grid)):
+        pretty_row = []
+        for j in range(len(grid)):
+            pretty_row.append(grid[i, j].decode())
+        print(pretty_row)
+
+
+def free_space(counter):
+    # checks how many horizonal and vertical spaces around tile are free
+    row, col = grid_positions[counter]
+    #print(str(row) + " " + str(col))
+    free_left = 0
+    free_right = 0
+    free_up = 0
+    free_down = 0
+
+    for j in reversed(range(col)):
+        if grid_state[j, col] == b'0' and grid_state[j, col + 1] == b'0' and grid_state[j, col - 1] == b'0':
+            free_left += 1
+        else:
+            break
+    for j in range(1, grid_size - col):
+        if grid_state[row, col + j] == b'0' and grid_state[row + 1, col + j] == b'0' and grid_state[row - 1, col + j] == b'0':
+            free_right += 1
+        else:
+            break
+    for j in reversed(range(row)):
+        if grid_state[j, col] == b'0' and grid_state[j, col + 1] == b'0' and grid_state[j, col - 1] == b'0':
+            free_up += 1
+        else:
+            break
+    for j in range(1, grid_size - row):
+        if grid_state[row + j, col] == b'0' and grid_state[row + j, col + 1] == b'0' and grid_state[row + j, col - 1] == b'0':
+            free_down += 1
+        else:
+            break
+    return free_left, free_right, free_up, free_down
 
 data = iter(open("dictionary.txt", "r"))
 words = []
@@ -19,85 +59,39 @@ letter_value = {'A':1 , 'B':3, 'C':3, 'D':2, 'E':1, 'F':4,
                 'G':2, 'H':4, 'I':1, 'J':8, 'K':5, 'L':1, 
                 'M':3, 'N':1, 'O':1, 'P':3, 'Q':10, 'R':1, 
                 'S':1, 'T':1, 'U':1, 'V':8, 'W':4, 'X':8, 'Y':4, 'Z':10}
-grid_state = np.zeros((grid_size, grid_size))
+grid_state = np.chararray((grid_size, grid_size))
+grid_state[:] = b'0'
 
 player_letters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I']
-grid_letters = ['C', 'H', 'I', 'R', 'B', 'C', 'F']
-grid_positions = [[5, 6], [5, 7], [5, 8], [5, 9], [4, 7], [0, 0], [10, 0]]
-grid_state[5, 6] = 1
-grid_state[5, 7] = 1
-grid_state[5, 8] = 1
-grid_state[5, 9] = 1
-grid_state[4, 7] = 1
-print(grid_state)
+grid_state[5, 6] = 'C'
+grid_state[5, 7] = 'H'
+grid_state[5, 8] = 'A'
+grid_state[5, 9] = 'R'
+#grid_state[5, 10] = 'T'
+grid_state[4, 7] = 'A'
+prettyprint(grid_state)
 
-def free_space(counter):
-    # checks how many horizonal and vertical spaces around tile are free
-    row, col = grid_positions[counter]
-    print(str(row) + " " + str(col))
-    free_left = 0
-    free_right = 0
-    free_up = 0
-    free_down = 0
-    if row != 0:
-        for j in reversed(range(col)):
-            if grid_state[row, j] == 0 and grid_state[row + 1, j] == 0 and grid_state[row - 1, j] == 0:
-                free_left += 1
-            else:
-                break
-    else:
-        for j in reversed(range(col)):
-            if grid_state[row, j] == 0 and grid_state[row + 1, j] == 0:
-                free_left += 1
-            else:
-                break
-    if row != grid_size - 1:
-        for j in range(1, grid_size - col):
-            if grid_state[row, col + j] == 0 and grid_state[row + 1, col + j] == 0 and grid_state[row - 1, col + j] == 0:
-                free_right += 1
-            else:
-                break
-    else:
-        for j in range(1, grid_size - col):
-            if grid_state[row, col + j] == 0 and grid_state[row - 1, col + j] == 0:
-                free_right += 1
-            else:
-                break
-    if col != 0:
-        for j in reversed(range(row)):
-            if grid_state[j, col] == 0 and grid_state[j, col + 1] == 0 and grid_state[j, col - 1] == 0:
-                free_up += 1
-            else:
-                break
-    else:
-        for j in reversed(range(row)):
-            if grid_state[j, col] == 0 and grid_state[j, col + 1] == 0:
-                free_up += 1
-            else:
-                break
-    if col != grid_size - 1:
-        for j in range(1, grid_size - row):
-            if grid_state[row + j, col] == 0 and grid_state[row + j, col + 1] == 0 and grid_state[row + j, col - 1] == 0:
-                free_down += 1
-            else:
-                break
-    else:
-        for j in range(1, grid_size - row):
-            if grid_state[row + j, col] == 0 and grid_state[row + j, col - 1] == 0:
-                free_down += 1
-            else:
-                break
-    return free_left, free_right, free_up, free_down
+grid_letters = []
+grid_positions = []
+for i in range(grid_size):
+    for j in range(grid_size):
+        if grid_state[i, j] != b'0':
+            grid_letters.append(grid_state[i, j])
+            grid_positions.append([i, j])
+
+#print(grid_positions)
+#print(grid_letters)
 
 plays = []
 for i in range(len(grid_letters)):
     # check how many horizonal and vertical spaces around tile are free
     free_left, free_right, free_up, free_down = free_space(i)
-    letter = grid_letters[i]
+    letter = grid_letters[i].decode()
+    #print(letter)
     col, row = grid_positions[i]
 
     axes = np.array([free_left, free_right, free_up, free_down])
-    print("free spaces: " + str(axes))
+    #print("free spaces: " + str(axes))
     free_grid = np.array([free_left + free_right, free_up + free_down])
     free_spaces = max(free_grid)
 
@@ -136,9 +130,9 @@ for i in range(len(grid_letters)):
                     tile_locations.append(l)
             for location in tile_locations:
                 if negative_direction - (location + 1) > 0 and positive_direction - (len(word) - (location + 1)) > 0:
-                    plays.append([word, col, row])
+                    plays.append([word, col, row, location, free_axis])
 
-print(plays)
+#print(plays)
 scores = []
 #calculate number of points for each possible play
 for possible_play in plays:
@@ -152,9 +146,27 @@ for possible_play in plays:
 best_play = plays[np.argmax(scores)]
 word = best_play[0]
 tile_position = [best_play[1], best_play[2]]
+
 print("best play: " + str(word))
 print("tile position: " + str(tile_position))
 print("points: " + str(scores[np.argmax(scores)]))
+
+tile_in_word = best_play[3]
+#print(tile_in_word)
+#0 - horizontal, 1 - vertical
+axis_orientation = best_play[4]
+#print("axis orientation: " + str(axis_orientation))
+for i in range(len(word)):
+    if i != tile_in_word:
+        if i < tile_in_word:
+            grid_state[tile_position[0] - (axis_orientation)*(tile_in_word - i), tile_position[1] - (1 - axis_orientation)*(tile_in_word - i)] = word[i]
+        elif i > tile_in_word:
+            grid_state[tile_position[0] + (axis_orientation)*(i - tile_in_word), tile_position[1] + (1 - axis_orientation)*(i - tile_in_word)] = word[i]
+prettyprint(grid_state)
+
+
+
+
 
 
 
