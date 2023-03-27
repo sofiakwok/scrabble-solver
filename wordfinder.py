@@ -22,8 +22,8 @@ letter_value = {'A':1 , 'B':3, 'C':3, 'D':2, 'E':1, 'F':4,
 grid_state = np.zeros((grid_size, grid_size))
 
 player_letters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I']
-grid_letters = ['B', 'E', 'E', 'F', 'B']
-grid_positions = [[5, 6], [5, 7], [5, 8], [5, 9], [4, 7]]
+grid_letters = ['C', 'H', 'I', 'R', 'B', 'C', 'F']
+grid_positions = [[5, 6], [5, 7], [5, 8], [5, 9], [4, 7], [0, 0], [10, 0]]
 grid_state[5, 6] = 1
 grid_state[5, 7] = 1
 grid_state[5, 8] = 1
@@ -34,30 +34,59 @@ print(grid_state)
 def free_space(counter):
     # checks how many horizonal and vertical spaces around tile are free
     row, col = grid_positions[counter]
+    print(str(row) + " " + str(col))
     free_left = 0
     free_right = 0
     free_up = 0
     free_down = 0
-    for j in reversed(range(col)):
-        if grid_state[row, j] == 0 and grid_state[row + 1, j] == 0 and grid_state[row - 1, j] == 0:
-            free_left += 1
-        else:
-            break
-    for j in range(1, grid_size - col):
-        if grid_state[row, col + j] == 0 and grid_state[row + 1, col + j] == 0 and grid_state[row - 1, col + j] == 0:
-            free_right += 1
-        else:
-            break
-    for j in reversed(range(row)):
-        if grid_state[j, col] == 0 and grid_state[j, col + 1] == 0 and grid_state[j, col - 1] == 0:
-            free_up += 1
-        else:
-            break
-    for j in range(1, grid_size - row):
-        if grid_state[row + j, col] == 0 and grid_state[row + j, col + 1] == 0 and grid_state[row + j, col - 1] == 0:
-            free_down += 1
-        else:
-            break
+    if row != 0:
+        for j in reversed(range(col)):
+            if grid_state[row, j] == 0 and grid_state[row + 1, j] == 0 and grid_state[row - 1, j] == 0:
+                free_left += 1
+            else:
+                break
+    else:
+        for j in reversed(range(col)):
+            if grid_state[row, j] == 0 and grid_state[row + 1, j] == 0:
+                free_left += 1
+            else:
+                break
+    if row != grid_size - 1:
+        for j in range(1, grid_size - col):
+            if grid_state[row, col + j] == 0 and grid_state[row + 1, col + j] == 0 and grid_state[row - 1, col + j] == 0:
+                free_right += 1
+            else:
+                break
+    else:
+        for j in range(1, grid_size - col):
+            if grid_state[row, col + j] == 0 and grid_state[row - 1, col + j] == 0:
+                free_right += 1
+            else:
+                break
+    if col != 0:
+        for j in reversed(range(row)):
+            if grid_state[j, col] == 0 and grid_state[j, col + 1] == 0 and grid_state[j, col - 1] == 0:
+                free_up += 1
+            else:
+                break
+    else:
+        for j in reversed(range(row)):
+            if grid_state[j, col] == 0 and grid_state[j, col + 1] == 0:
+                free_up += 1
+            else:
+                break
+    if col != grid_size - 1:
+        for j in range(1, grid_size - row):
+            if grid_state[row + j, col] == 0 and grid_state[row + j, col + 1] == 0 and grid_state[row + j, col - 1] == 0:
+                free_down += 1
+            else:
+                break
+    else:
+        for j in range(1, grid_size - row):
+            if grid_state[row + j, col] == 0 and grid_state[row + j, col - 1] == 0:
+                free_down += 1
+            else:
+                break
     return free_left, free_right, free_up, free_down
 
 plays = []
