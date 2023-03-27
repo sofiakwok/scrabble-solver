@@ -14,7 +14,7 @@ for element in data:
     stripped = element.strip("\n")
     words.append(stripped.split(" "))
 
-grid_size = 10
+grid_size = 11
 letter_value = {'A':1 , 'B':3, 'C':3, 'D':2, 'E':1, 'F':4, 
                 'G':2, 'H':4, 'I':1, 'J':8, 'K':5, 'L':1, 
                 'M':3, 'N':1, 'O':1, 'P':3, 'Q':10, 'R':1, 
@@ -22,11 +22,13 @@ letter_value = {'A':1 , 'B':3, 'C':3, 'D':2, 'E':1, 'F':4,
 grid_state = np.zeros((grid_size, grid_size))
 
 player_letters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I']
-grid_letters = ['B', 'E', 'E']
-grid_positions = [[5, 6], [5, 7], [5, 8]]
+grid_letters = ['B', 'E', 'E', 'F', 'B']
+grid_positions = [[5, 6], [5, 7], [5, 8], [5, 9], [4, 7]]
 grid_state[5, 6] = 1
 grid_state[5, 7] = 1
 grid_state[5, 8] = 1
+grid_state[5, 9] = 1
+grid_state[4, 7] = 1
 print(grid_state)
 
 def free_space(counter):
@@ -36,24 +38,24 @@ def free_space(counter):
     free_right = 0
     free_up = 0
     free_down = 0
-    for j in reversed(range(row)):
-        if grid_state[j, col] == 0:
-            free_up += 1
-        else:
-            break
-    for j in range(1, grid_size - row):
-        if grid_state[row + j, col] == 0:
-            free_down += 1
-        else:
-            break
     for j in reversed(range(col)):
-        if grid_state[row, j] == 0:
+        if grid_state[row, j] == 0 and grid_state[row + 1, j] == 0 and grid_state[row - 1, j] == 0:
             free_left += 1
         else:
             break
     for j in range(1, grid_size - col):
-        if grid_state[row, col + j] == 0:
+        if grid_state[row, col + j] == 0 and grid_state[row + 1, col + j] == 0 and grid_state[row - 1, col + j] == 0:
             free_right += 1
+        else:
+            break
+    for j in reversed(range(row)):
+        if grid_state[j, col] == 0 and grid_state[j, col + 1] == 0 and grid_state[j, col - 1] == 0:
+            free_up += 1
+        else:
+            break
+    for j in range(1, grid_size - row):
+        if grid_state[row + j, col] == 0 and grid_state[row + j, col + 1] == 0 and grid_state[row + j, col - 1] == 0:
+            free_down += 1
         else:
             break
     return free_left, free_right, free_up, free_down
@@ -95,7 +97,7 @@ for i in range(len(grid_letters)):
                     if l == len(word) - 1:
                         possible_plays.append(word)
                         break
-        print(possible_plays)
+        #print(possible_plays)
 
         #check whether tile location in the word will not interfere with freespace amount
         for word in possible_plays:
