@@ -27,25 +27,69 @@ def free_space(counter):
     free_down = 0
 
     for j in reversed(range(col)):
-        if grid_state[j, col] == b'0' and grid_state[j, col + 1] == b'0' and grid_state[j, col - 1] == b'0':
-            free_left += 1
+        if row != 0 and row != grid_size - 1:
+            if grid_state[row, j] == b'0' and grid_state[row + 1, j] == b'0' and grid_state[row - 1, j] == b'0':
+                free_left += 1
+            else:
+                break
+        elif row != 0:
+            if grid_state[row, j] == b'0' and grid_state[row - 1, j] == b'0':
+                free_left += 1
+            else:
+                break
         else:
-            break
+            if grid_state[row, j] == b'0' and grid_state[row + 1, j] == b'0':
+                free_left += 1
+            else:
+                break
     for j in range(1, grid_size - col):
-        if grid_state[row, col + j] == b'0' and grid_state[row + 1, col + j] == b'0' and grid_state[row - 1, col + j] == b'0':
-            free_right += 1
+        if row != 0 and row != grid_size - 1:
+            if grid_state[row, col + j] == b'0' and grid_state[row + 1, col + j] == b'0' and grid_state[row - 1, col + j] == b'0':
+                free_right += 1
+            else:
+                break
+        elif row != 0:
+            if grid_state[row, col + j] == b'0' and grid_state[row + 1, col + j] == b'0':
+                free_right += 1
+            else:
+                break
         else:
-            break
+            if grid_state[row, col + j] == b'0' and grid_state[row - 1, col + j] == b'0':
+                free_right += 1
+            else:
+                break
     for j in reversed(range(row)):
-        if grid_state[j, col] == b'0' and grid_state[j, col + 1] == b'0' and grid_state[j, col - 1] == b'0':
-            free_up += 1
-        else:
-            break
+        if col != 0 and col != grid_size - 1:
+            if grid_state[j, col] == b'0' and grid_state[j, col + 1] == b'0' and grid_state[j, col - 1] == b'0':
+                free_up += 1
+            else:
+                break
+        elif col != 0:
+            if grid_state[j, col] == b'0' and grid_state[j, col - 1] == b'0':
+                free_up += 1
+            else:
+                break
+        else: 
+            if grid_state[j, col] == b'0' and grid_state[j, col + 1] == b'0':
+                free_up += 1
+            else:
+                break
     for j in range(1, grid_size - row):
-        if grid_state[row + j, col] == b'0' and grid_state[row + j, col + 1] == b'0' and grid_state[row + j, col - 1] == b'0':
-            free_down += 1
+        if col != 0 and col != grid_size - 1:
+            if grid_state[row + j, col] == b'0' and grid_state[row + j, col + 1] == b'0' and grid_state[row + j, col - 1] == b'0':
+                free_down += 1
+            else:
+                break
+        elif col != 0:
+            if grid_state[row + j, col] == b'0' and grid_state[row + j, col - 1] == b'0':
+                free_down += 1
+            else:
+                break
         else:
-            break
+            if grid_state[row + j, col] == b'0' and grid_state[row + j, col + 1] == b'0':
+                free_down += 1
+            else:
+                break
     return free_left, free_right, free_up, free_down
 
 data = iter(open("dictionary.txt", "r"))
@@ -66,8 +110,8 @@ player_letters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I']
 grid_state[5, 6] = 'C'
 grid_state[5, 7] = 'H'
 grid_state[5, 8] = 'A'
-grid_state[5, 9] = 'R'
-#grid_state[5, 10] = 'T'
+grid_state[5, 9] = 'N'
+grid_state[5, 10] = 'T'
 grid_state[4, 7] = 'A'
 prettyprint(grid_state)
 
